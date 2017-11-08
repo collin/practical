@@ -1,6 +1,6 @@
-start = expression+
+start = expression*
 
-expression = value / operator
+expression = value / operator / identifier
 
 operator = assignment
 

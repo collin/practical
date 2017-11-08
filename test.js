@@ -1,6 +1,7 @@
 const fs = require('fs')
 const peg = require('pegjs')
 const { assert } = require('chai')
+const compiler = require('./compiler')
 
 let grammar
 let parser
@@ -15,6 +16,10 @@ function assertParses(selector, ...ast) {
 }
 
 describe('practical parser', () => {
+  it('parses nothing', () => {
+    assertParses('')
+  })
+
   describe('operators', () => {
     describe('assignment', () => {
       it('parses assignment', () => {
@@ -29,6 +34,15 @@ describe('practical parser', () => {
             value: true,
           },
         })
+      })
+    })
+  })
+
+  describe('identifier', () => {
+    it('parses identifiers', () => {
+      assertParses('foo', {
+        type: 'identifier',
+        value: 'foo',
       })
     })
   })
@@ -68,5 +82,20 @@ describe('practical parser', () => {
         value: false,
       })
     })
+  })
+})
+
+function assertCompiles (source, output) {
+  assert.equal(
+    compiler(source),
+`(async function main () {
+  ${output}
+}())`
+  )
+}
+
+describe('compiler', () => {
+  it('compiles nothing', () => {
+    assertCompiles('', '')
   })
 })
