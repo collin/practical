@@ -47,6 +47,50 @@ describe('practical parser', () => {
     })
   })
 
+  describe('arrow function', () => {
+    it('parses inline arrow functions', () => {
+      assertParses('() => {}', {
+        type: 'function',
+        argList: [],
+        body: [],
+      })
+    })
+
+    it('parses single argument functions', () => {
+      assertParses('(arg1) => {}', {
+        type: 'function',
+        argList: [{
+          type: 'arg',
+          expressions: [{
+            type: 'identifier',
+            value: 'arg1',
+          }]
+        }],
+        body: []
+      })
+    })
+
+    it('parses args', () => {
+      assertParses('(arg1, arg2) => {}', {
+        type: 'function',
+        argList: [{
+          type: 'arg',
+          expressions: [{
+            type: 'identifier',
+            value: 'arg1',
+          }]
+        },{
+          type: 'arg',
+          expressions: [{
+            type: 'identifier',
+            value: 'arg2',
+          }]
+        }],
+        body: []
+      })
+    })
+  })
+
   describe('values', () => {
     it('parses double quoted string literals', () => {
       assertParses('"string literal"', {

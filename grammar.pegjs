@@ -13,7 +13,34 @@ assignment = assignTo:identifier _ "=" _ assignValue:expression
     }
   }
 
-value = number / string / boolean
+value = function / number / string / boolean
+
+function = "(" _ argList:argList _ ")" _ "=>" _ "{" _ "}"
+  {
+    return {
+      type: 'function',
+      argList: argList,
+      body: []
+    }
+  }
+
+argList = arg:arg* args:(_ "," _ an_arg:arg { return an_arg })*
+  {
+    if (arg) {
+      return [...arg, ...args]
+    }
+    else {
+      return []
+    }
+  }
+
+arg = expressions:identifier
+  {
+    return {
+      type: 'arg',
+      expressions: [expressions]
+    }
+  }
 
 boolean = true / false
 
