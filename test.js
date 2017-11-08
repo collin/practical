@@ -17,4 +17,27 @@ function assertParses(selector, ...ast) {
 }
 
 describe('practical parser', () => {
+  describe('parses values', () => {
+    it('parses double quoted string literals', () => {
+      assertParses('"string literal"', {
+        type: 'string',
+        value: 'string literal',
+      })
+    })
+
+    it('parses integers', () => {
+      assertParses('44', {
+        type: 'integer',
+        value: 44,
+      })
+    })
+
+    it('parses floats', () => {
+      assertParses('10.5', {
+        type: 'float',
+        value: 10.5,
+      })
+    })
+  })
 })
+

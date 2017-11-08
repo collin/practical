@@ -10,4 +10,3 @@ function visit (ast) {
   }
 }
 
-module.exports = dollar
