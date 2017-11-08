@@ -1,6 +1,7 @@
 start = expression*
 
-expression = value / operator / identifier
+expression = _ expression:( invocation / value / operator / identifier ) _
+  { return expression }
 
 operator = assignment
 
@@ -10,6 +11,15 @@ assignment = assignTo:identifier _ "=" _ assignValue:expression
       type: 'assignment',
       assignTo,
       assignValue,
+    }
+  }
+
+invocation = identifier:identifier "(" _ arg:expression* args:(_ "," _ an_arg:expression { return an_arg })* _ ")"
+  {
+    return {
+      type: 'invocation',
+      argsList: [...arg, ...args],
+      invokedValue: [identifier],
     }
   }
 

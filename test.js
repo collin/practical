@@ -20,6 +20,46 @@ describe('practical parser', () => {
     assertParses('')
   })
 
+  it('parses multiple expressions', () => {
+    assertParses(`
+      foo = 123
+      bar = 456
+      baz = bat
+    `, {
+      assignTo: {
+        type: 'identifier',
+        value: 'foo',
+      },
+      assignValue: {
+        type: 'integer',
+        value: 123,
+      },
+      type: 'assignment',
+    },
+    {
+      assignTo: {
+        type: 'identifier',
+        value: 'bar',
+      },
+      assignValue: {
+        type: 'integer',
+        value: 456,
+      },
+      type: 'assignment',
+    },
+    {
+      assignTo: {
+        type: 'identifier',
+        value: 'baz',
+      },
+      assignValue: {
+        type: 'identifier',
+        value: 'bat',
+      },
+      type: 'assignment',
+    })
+  })
+
   describe('operators', () => {
     describe('assignment', () => {
       it('parses assignment', () => {
@@ -158,6 +198,57 @@ describe('practical parser', () => {
       assertParses('false', {
         type: 'boolean',
         value: false,
+      })
+    })
+  })
+
+  describe('invocation', () => {
+    it('invokes values', () => {
+      assertParses('foo()', {
+        type: 'invocation',
+        argsList: [],
+        invokedValue: [{
+          type: 'identifier',
+          value: 'foo',
+        }],
+      })
+    })
+
+    it('invokes with an argument', () => {
+      assertParses('foo(3)', {
+        type: 'invocation',
+        argsList: [{
+          type: 'integer',
+          value: 3,
+        }],
+        invokedValue: [{
+          type: 'identifier',
+          value: 'foo',
+        }],
+      })
+    })
+
+    it('invokes with many arguments', () => {
+      assertParses('foo(3, bar(), bazbat)', {
+        type: 'invocation',
+        argsList: [{
+          type: 'integer',
+          value: 3,
+        },{
+          type: 'invocation',
+          argsList: [],
+          invokedValue: [{
+            type: 'identifier',
+            value: 'bar'
+          }]
+        },{
+          type: 'identifier',
+          value: 'bazbat',
+        }],
+        invokedValue: [{
+          type: 'identifier',
+          value: 'foo',
+        }],
       })
     })
   })
