@@ -17,7 +17,25 @@ function assertParses(selector, ...ast) {
 }
 
 describe('practical parser', () => {
-  describe('parses values', () => {
+  describe('operators', () => {
+    describe('assignment', () => {
+      it('parses assignment', () => {
+        assertParses('foo = true', {
+          type: 'assignment',
+          assignTo: {
+            type: 'identifier',
+            value: 'foo',
+          },
+          assignValue: {
+            type: 'boolean',
+            value: true,
+          },
+        })
+      })
+    })
+  })
+
+  describe('values', () => {
     it('parses double quoted string literals', () => {
       assertParses('"string literal"', {
         type: 'string',
@@ -38,6 +56,19 @@ describe('practical parser', () => {
         value: 10.5,
       })
     })
+
+    it('parses true', () => {
+      assertParses('true', {
+        type: 'boolean',
+        value: true,
+      })
+    })
+
+    it('parses false', () => {
+      assertParses('false', {
+        type: 'boolean',
+        value: false,
+      })
+    })
   })
 })
-

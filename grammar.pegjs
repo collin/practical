@@ -4,9 +4,34 @@ expression = value / operator
 
 operator = assignment
 
-assignment = identifier _ "=" _ expression
+assignment = assignTo:identifier _ "=" _ assignValue:expression
+  {
+    return {
+      type: 'assignment',
+      assignTo,
+      assignValue,
+    }
+  }
 
-value = number / string
+value = number / string / boolean
+
+boolean = true / false
+
+true = "true"
+  {
+    return {
+      type: 'boolean',
+      value: true,
+    }
+  }
+
+false = "false"
+  {
+    return {
+      type: 'boolean',
+      value: false,
+    }
+  }
 
 number = float / integer
 
