@@ -15,12 +15,12 @@ assignment = assignTo:identifier _ "=" _ assignValue:expression
 
 value = function / number / string / boolean
 
-function = "(" _ argList:argList _ ")" _ "=>" _ "{" _ "}"
+function = "(" _ argList:argList _ ")" _ "=>" _ "{" body:expression* "}"
   {
     return {
       type: 'function',
       argList: argList,
-      body: []
+      body: body,
     }
   }
 
