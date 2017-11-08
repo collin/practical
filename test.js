@@ -1,8 +1,6 @@
 const fs = require('fs')
 const peg = require('pegjs')
 const { assert } = require('chai')
-const { JSDOM } = require('jsdom')
-const dollar = require('.')
 
 let grammar
 let parser
