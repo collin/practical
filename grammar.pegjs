@@ -34,7 +34,7 @@ argList = arg:arg* args:(_ "," _ an_arg:arg { return an_arg })*
     }
   }
 
-arg = expressions:identifier
+arg = expressions:( assignment / identifier )
   {
     return {
       type: 'arg',

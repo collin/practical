@@ -89,6 +89,40 @@ describe('practical parser', () => {
         body: []
       })
     })
+
+    it('parses assignment in args list', () => {
+      assertParses('(arg1 = 44, arg2=bar) => {}', {
+        type: 'function',
+        argList: [{
+          type: 'arg',
+          expressions: [{
+            type: 'assignment',
+            assignTo: {
+              type: 'identifier',
+              value: 'arg1',
+            },
+            assignValue: {
+              type: 'integer',
+              value: 44,
+            },
+          }]
+        },{
+          type: 'arg',
+          expressions: [{
+            type: 'assignment',
+            assignTo: {
+              type: 'identifier',
+              value: 'arg2',
+            },
+            assignValue: {
+              type: 'identifier',
+              value: 'bar',
+            },
+          }]
+        }],
+        body: []
+      })
+    })
   })
 
   describe('values', () => {
