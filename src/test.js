@@ -7,7 +7,7 @@ let grammar
 let parser
 
 beforeEach(() => {
-  grammar = fs.readFileSync('./grammar.pegjs').toString()
+  grammar = fs.readFileSync('./src/grammar.pegjs').toString()
   parser = peg.generate(grammar)
 })
 
@@ -18,6 +18,50 @@ function assertParses(selector, ...ast) {
 describe('practical parser', () => {
   it('parses nothing', () => {
     assertParses('')
+  })
+
+  describe('modules', () => {
+    it('parses importing default', () => {
+      assertParses(`import foo from "./pathname"`, {
+        type: 'import',
+        assignTo: {
+          type: 'identifier',
+          value: 'foo',
+        },
+        importFrom: {
+          type: 'string',
+          value: './pathname'
+        },
+      })
+    })
+
+    it('parses exports', () => {
+    })
+  })
+
+  describe('object literal', () => {
+    it('parses blank objects', () => {
+      assertParses(`{}`, {
+        type: 'object',
+        entries: [],
+      })
+    })
+
+    it('parses simple objects', () => {
+      assertParses(`{ foo: "bar" }`, {
+        type: 'object',
+        entries: [{
+          key: {
+            type: 'identifier',
+            value: 'foo',
+          },
+          value: {
+            type: 'string',
+            value: 'bar',
+          },
+        }],
+      })
+    })
   })
 
   it('parses multiple expressions', () => {

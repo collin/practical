@@ -1,7 +1,24 @@
 start = expression*
 
-expression = _ expression:( invocation / value / operator / identifier ) _
+expression =
+  _
+  expression:(
+    import / export /
+    invocation / value / operator / identifier
+  )
+  _
   { return expression }
+
+import = "import" _ identifier:identifier _ "from" _ string:string
+  {
+    return {
+      type: 'import',
+      assignTo: identifier,
+      importFrom: string,
+    }
+  }
+
+export = import
 
 operator = assignment
 
@@ -14,7 +31,9 @@ assignment = assignTo:identifier _ "=" _ assignValue:expression
     }
   }
 
-invocation = identifier:identifier "(" _ arg:expression* args:(_ "," _ an_arg:expression { return an_arg })* _ ")"
+invocation =
+  identifier:identifier
+  "(" _ arg:expression* args:(_ "," _ an_arg:expression { return an_arg })* _ ")"
   {
     return {
       type: 'invocation',
@@ -23,7 +42,21 @@ invocation = identifier:identifier "(" _ arg:expression* args:(_ "," _ an_arg:ex
     }
   }
 
-value = function / number / string / boolean
+value = object / function / number / string / boolean
+
+
+object = "{" _ entry:entry* entries:( _ "," _ an_entry:entry { return an_entry })* _ ","* _ "}"
+  {
+    return {
+      type: 'object',
+      entries: [...entry, ...entries],
+    }
+  }
+
+entry = key:identifier ":" _ value:expression
+  {
+    return { key, value }
+  }
 
 function = "(" _ argList:argList _ ")" _ "=>" _ "{" _ body:expression* _ "}"
   {
