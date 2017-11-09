@@ -4,7 +4,7 @@ expression =
   _
   expression:(
     import / export /
-    invocation / value / operator / identifier
+    invocation / operator / value / identifier
   )
   _
   { return expression }
@@ -22,7 +22,26 @@ export = import
 
 operator = assignment
 
-assignment = assignTo:identifier _ "=" _ assignValue:expression
+assignment = object_assignment / variable_assignment
+
+object_assignment = assignTo:destructure _ "=" _ assignValue:expression
+  {
+    return {
+      type: 'destructured_assignment',
+      assignTo,
+      assignValue,
+    }
+  }
+
+destructure = "{" _ identifier:identifier identifiers:( _ "," _ ident:identifier { return ident })* _ ","* _ "}"
+  {
+    return {
+      type: 'destructure',
+      identifiers: [identifier, ...identifiers],
+    }
+  }
+
+variable_assignment = assignTo:identifier _ "=" _ assignValue:expression
   {
     return {
       type: 'assignment',

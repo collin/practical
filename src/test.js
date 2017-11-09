@@ -177,6 +177,28 @@ describe('practical parser', () => {
           },
         })
       })
+
+      describe('destructured', () => {
+        it('parses destructured assignment', () => {
+          assertParses('{ foo, bar } = baz', {
+            type: 'destructured_assignment',
+            assignTo: {
+              type: 'destructure',
+              identifiers: [{
+                type: 'identifier',
+                value: 'foo',
+              }, {
+                type: 'identifier',
+                value: 'bar',
+              }]
+            },
+            assignValue: {
+              type: 'identifier',
+              value: 'baz',
+            },
+          })
+        })
+      })
     })
   })
 
