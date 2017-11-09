@@ -42,8 +42,16 @@ invocation =
     }
   }
 
-value = object / function / number / string / boolean
+value = object / array / function / number / string / boolean
 
+
+array = "[" _ item:expression* items:(_ "," _ an_item:expression { return an_item })* _ ","* _ "]"
+  {
+    return {
+      type: 'array',
+      items: [...item, ...items]
+    }
+  }
 
 object = "{" _ entry:entry* entries:( _ "," _ an_entry:entry { return an_entry })* _ ","* _ "}"
   {

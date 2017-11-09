@@ -64,6 +64,42 @@ describe('practical parser', () => {
     })
   })
 
+  describe('array literal', () => {
+    it('parses blank arrays', () => {
+      assertParses('[]', {
+        type: 'array',
+        items: [],
+      })
+    })
+
+    it('parses arrays with items', () => {
+      assertParses(`
+        [1, "hello"]
+      `, {
+        type: 'array',
+        items: [
+          { type: 'integer', value: 1 },
+          { type: 'string', value: 'hello' },
+        ]
+      })
+    })
+
+    it('parses arrays across lines', () => {
+      assertParses(`
+        [
+          1,
+          "hello",
+        ]
+      `, {
+        type: 'array',
+        items: [
+          { type: 'integer', value: 1 },
+          { type: 'string', value: 'hello' },
+        ]
+      })
+    })
+  })
+
   it('parses multiple expressions', () => {
     assertParses(`
       foo = 123
