@@ -56,14 +56,24 @@ array = "[" _ item:expression* items:(_ "," _ an_item:expression { return an_ite
 object = "{" _ entry:entry* entries:( _ "," _ an_entry:entry { return an_entry })* _ ","* _ "}"
   {
     return {
-      type: 'object',
-      entries: [...entry, ...entries],
+  type: 'object',
+          entries: [...entry, ...entries],
     }
   }
 
-entry = key:identifier ":" _ value:expression
+entry = entry:( key_value / identifier_key_value )
+  {
+    return entry
+  }
+
+key_value = key:identifier ":" _ value:expression
   {
     return { key, value }
+  }
+
+identifier_key_value = identifier:identifier
+  {
+    return { key: identifier, value: identifier }
   }
 
 function = "(" _ argList:argList _ ")" _ "=>" _ "{" _ body:expression* _ "}"

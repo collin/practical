@@ -11,8 +11,14 @@ beforeEach(() => {
   parser = peg.generate(grammar)
 })
 
-function assertParses(selector, ...ast) {
-  assert.deepEqual(parser.parse(selector), ast)
+function assertParses(source, ...ast) {
+  assert.deepEqual(parser.parse(source), ast)
+}
+
+function printAST (source) {
+  console.log(
+    JSON.stringify(parser.parse(source), true, 2)
+  )
 }
 
 describe('practical parser', () => {
@@ -44,6 +50,22 @@ describe('practical parser', () => {
       assertParses(`{}`, {
         type: 'object',
         entries: [],
+      })
+    })
+
+    it('parses condensed object syntax', () => {
+      assertParses(`{ foo }`, {
+        type: 'object',
+        entries: [{
+          key: {
+            type: 'identifier',
+            value: 'foo',
+          },
+          value: {
+            type: 'identifier',
+            value: 'foo',
+          },
+        }]
       })
     })
 
