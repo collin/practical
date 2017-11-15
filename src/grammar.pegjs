@@ -22,9 +22,9 @@ export = import
 
 operator = assignment
 
-assignment = object_assignment / variable_assignment
+assignment = object_assignment / array_assignment / variable_assignment
 
-object_assignment = assignTo:destructure _ "=" _ assignValue:expression
+array_assignment = assignTo:array_destructure _ "=" _ assignValue:expression
   {
     return {
       type: 'destructured_assignment',
@@ -33,7 +33,24 @@ object_assignment = assignTo:destructure _ "=" _ assignValue:expression
     }
   }
 
-destructure = "{" _ identifier:identifier identifiers:( _ "," _ ident:identifier { return ident })* _ ","* _ "}"
+array_destructure = "[" _ identifier:identifier identifiers:( _ "," _ ident:identifier { return ident })* _ ","* _ "]"
+  {
+    return {
+      type: 'destructure',
+      identifiers: [identifier, ...identifiers],
+    }
+  }
+
+object_assignment = assignTo:object_destructure _ "=" _ assignValue:expression
+  {
+    return {
+      type: 'destructured_assignment',
+      assignTo,
+      assignValue,
+    }
+  }
+
+object_destructure = "{" _ identifier:identifier identifiers:( _ "," _ ident:identifier { return ident })* _ ","* _ "}"
   {
     return {
       type: 'destructure',

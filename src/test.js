@@ -2,9 +2,16 @@ const fs = require('fs')
 const peg = require('pegjs')
 const { assert } = require('chai')
 const compiler = require('./compiler')
+const stripIndent = require('strip-indent')
+const redent = require('redent')
 
 let grammar
 let parser
+
+before(() => {
+  console.clear()
+  console.log('================= PRACTICAL =================')
+})
 
 beforeEach(() => {
   grammar = fs.readFileSync('./src/grammar.pegjs').toString()
@@ -179,7 +186,27 @@ describe('practical parser', () => {
       })
 
       describe('destructured', () => {
-        it('parses destructured assignment', () => {
+        it('parses destructured array assignment', () => {
+          assertParses('[foo, bar] = baz', {
+            type: 'destructured_assignment',
+            assignTo: {
+              type: 'destructure',
+              identifiers: [{
+                type: 'identifier',
+                value: 'foo',
+              }, {
+                type: 'identifier',
+                value: 'bar',
+              }]
+            },
+            assignValue: {
+              type: 'identifier',
+              value: 'baz',
+            },
+          })
+        })
+
+        it('parses destructured object assignment', () => {
           assertParses('{ foo, bar } = baz', {
             type: 'destructured_assignment',
             assignTo: {
@@ -378,17 +405,67 @@ describe('practical parser', () => {
   })
 })
 
+function chomp (string) {
+  return string.replace(/^\n/, '').replace(/\n$/, '')
+}
+
+
 function assertCompiles (source, output) {
+  source = chomp(source)
+  compiled = compiler(stripIndent(source))
+  const redented = redent(output, 2).replace(/ *$/, '')
   assert.equal(
-    compiler(source),
-`(async function main () {
-  ${output}
-}())`
+    compiled,
+    `(async function main () {${redented}}())`
   )
 }
 
-describe('compiler', () => {
+describe.only('compiler', () => {
   it('compiles nothing', () => {
-    assertCompiles('', '')
+    assertCompiles('', '\n')
+  })
+
+  it('compiles integers', () => {
+    assertCompiles('123', `
+      123
+    `)
+  })
+
+  it('compiles function invocation', () => {
+    assertCompiles(`
+      foo = () => {}
+      bar = foo()
+    `, `
+      const foo = async () => {}
+      const bar = (await foo())
+    `)
+  })
+
+  it('compiles assignment expressions', () => {
+    assertCompiles('foo = true', `
+      const foo = true
+    `)
+  })
+
+  it('compiles integers in a function', () => {
+    assertCompiles(`
+      () => {
+        333
+        777
+      }
+    `, `
+      async () => {
+        333
+        777
+      }
+    `)
+  })
+
+  it('compiles functions async', () => {
+    assertCompiles(`
+      () => {}
+    `,`
+      async () => {}
+    `)
   })
 })
